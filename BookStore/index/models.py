@@ -11,6 +11,7 @@ class Book(models.Model):
     # public = models.CharField(max_length=50,verbose_name='出版社')
     price = models.DecimalField(max_digits=7, decimal_places=2, verbose_name='定价')
 
+    @property
     def default_price(self):
         return '￥30'
 
