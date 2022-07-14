@@ -21,7 +21,7 @@ class Author(models.Model):
     email = models.EmailField(verbose_name='邮箱')
 
     def __str__(self):
-        return "name: %s"  % (self.name)
+        return "name: %s" % (self.name)
 
 
 class UserInfo(models.Model):
