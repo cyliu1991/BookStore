@@ -24,6 +24,7 @@ class Book(models.Model):
 class Author(models.Model):
     name = models.CharField(max_length=30, verbose_name='姓名')
     email = models.EmailField(verbose_name='邮箱')
+    books = models.ManyToManyField(to="Book")
 
     def __str__(self):
         return "name: %s" % (self.name)
