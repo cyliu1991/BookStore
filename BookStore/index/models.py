@@ -32,3 +32,9 @@ class Author(models.Model):
 class UserInfo(models.Model):
     username = models.CharField(max_length=24, verbose_name='用户名')
     password = models.CharField(max_length=24, verbose_name='密码')
+
+
+class ExtendUserInfo(models.Model):
+    user = models.OneToOneField(to=UserInfo, on_delete=models.CASCADE)
+    signature = models.CharField(max_length=255, verbose_name='用户签名', help_text='自建签名')
+    nickname = models.CharField(max_length=255, verbose_name='昵称', help_text='自建昵称')
