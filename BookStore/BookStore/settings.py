@@ -39,7 +39,8 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     # 添加自定义APP
-    'index'
+    'index',
+    'user'
 ]
 
 MIDDLEWARE = [
