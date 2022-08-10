@@ -37,3 +37,12 @@ def login_view(request):
             # 若存在则说明用户选择了记住用户名功能，执行以下语句设置cookie的过期时间
             response.set_cookie('username', username, 60 * 60 * 24 * 7)
         return response
+
+
+def logout_view(request):
+    if 'username' in request.session:
+        del request.session['username']
+    resp = HttpResponseRedirect('/user/index')
+    if 'username' in request.COOKIES:
+        resp.delete_cookie('username')
+    return resp
