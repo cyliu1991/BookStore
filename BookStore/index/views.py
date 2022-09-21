@@ -1,6 +1,6 @@
-from django.http import HttpResponse
+from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
-from index.models import Book
+from index.models import Book, PubName
 import logging
 from django import forms
 # Create your views here.
@@ -37,5 +37,35 @@ def book_table(request):
     except Exception as e:
         print(e)
     return render(request, "index/book_table.html", locals())
+
+
+def add_book(request):
+    if request.method == 'GET':
+        return render(request, 'index/add_book.html')
+    elif request.method == 'POST':
+        title = request.POST.get('title')
+        if not title:
+            return HttpResponse("请给出一个正确的title")
+        pub = request.POST.get('pub')
+        price = float(request.POST.get('price', '999.99'))
+        if not price:
+            return HttpResponse('请输入价格')
+        try:
+            retail_price = float(request.POST.get('retail_price'))
+            if not retail_price:
+                return HttpResponse('请输入市场价')
+        except Exception as e:
+            print(e)
+
+        old_book = Book.objects.filter(title=title)
+        if old_book:
+            return HttpResponse('你输入的书籍系统已经存在 !')
+        try:
+            pub1 = PubName.objects.get(pubname=str(pub))
+            Book.objects.create(title=title, price=price, retail_price=retail_price, pub=pub1)
+        except Exception as e:
+            print('Add ErrorReason is %s' % (e))
+        return HttpResponseRedirect('/index/all_book')
+    return HttpResponse('请使用正确Http请求方法 !')
 
 
