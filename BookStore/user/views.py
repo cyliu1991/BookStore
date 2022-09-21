@@ -1,5 +1,5 @@
 import hashlib
-
+import logging
 from django.http import HttpResponseRedirect, HttpResponse
 from django.shortcuts import render
 
@@ -8,12 +8,14 @@ from user.models import User
 
 
 def login_view(request):
+    logging.basicConfig(level=logging.DEBUG)
+    logging.info("*******Login********")
     if request.method == 'GET':
         if 'username' in request.session:
-            return HttpResponseRedirect('index/allbook')
+            return HttpResponseRedirect('/index/allbook')
         if 'username' in request.COOKIES:
             request.session['username'] = request.COOKISE['username']
-            return HttpResponseRedirect('index/allbook')
+            return HttpResponseRedirect('/index/allbook')
         return render(request, 'user/login.html')
     elif request.method == 'POST':
         username = request.POST.get('username')
@@ -24,7 +26,9 @@ def login_view(request):
         if not username or not password:
             error = '你输入的用户名或者密码错误！'
             return render(request, 'user/login.html', locals())
-        users = User.objects.filter(username=username, password=password)
+        users = User.objects.filter(username=username, password=password_m)
+        logging.debug("users:", users)
+        # print(users)
         if not users:
             error = '用户不存在或用户密码输入错误!!'
             return render(request, 'user/login.html', locals())
@@ -40,12 +44,13 @@ def login_view(request):
 
 
 def logout_view(request):
+    resp = HttpResponseRedirect('/index')
     if 'username' in request.session:
         del request.session['username']
-    resp = HttpResponseRedirect('/user/index')
     if 'username' in request.COOKIES:
         resp.delete_cookie('username')
     return resp
+
 
 def reg_view(request):
     if request.method == "GET":
