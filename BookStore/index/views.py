@@ -7,6 +7,21 @@ from django import forms
 # Create your views here.
 
 
+def delete_book(request,book_id):
+    book_id = int(book_id)
+    try:
+        book = Book.objects.get(id=book_id)
+    except Exception as e:
+        print('get查询出现了异常没找到数据', e)
+        return HttpResponse('这里没有任何书籍可以被删除')
+    if request.method == "GET":
+        return render(request, 'index/delete_book.html', locals())
+    elif request.method == "POST":
+        book.delete()
+        return HttpResponseRedirect("/index/all_book")
+    return HttpResponse("书籍条目信息删除功能")
+
+
 def update_book(request, book_id):
     # 用 book_id给每个书籍加上标记
     # 将其作为查找书籍的参数
