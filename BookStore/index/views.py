@@ -7,8 +7,35 @@ from django import forms
 # Create your views here.
 
 
+def update_book(request, book_id):
+    # 用 book_id给每个书籍加上标记
+    # 将其作为查找书籍的参数
+    book_id = int(book_id)
+    try:
+        book = Book.objects.get(id=book_id)
+    except Exception as e:
+        return HttpResponse('--没有找到任何书籍---')
+    if request.method == 'GET':
+        return render(request, 'index/update_book.html', locals())
+    elif request.method == 'POST':
+        price = request.POST.get('price')
+        retail_price = request.POST.get('retail_price')
+        if not price or not retail_price:
+            return HttpResponse('请输入更改后的零售价或市场价！')
+        price = float(price)
+        retail_price = float(retail_price)
+        # 修改对象属性值
+        book.price = price
+        book.retail_price = retail_price
+        # 存储更新后的状态
+        book.save()
+        # 重定向至127.0.0.1:8000/index/all_book/
+        return HttpResponseRedirect('/index/all_book')
+    return HttpResponse("书籍信息更新功能")
+
+
 def book_not_list(request):
-    return render(request,"index/book_not_list.html")
+    return render(request, "index/book_not_list.html")
 
 
 def search_title_form(request):
@@ -24,7 +51,6 @@ def search_title(request):
         return render(request, 'index/book_list.html', locals())
     else:
         return render(request, 'index/search_title.html', {'form': form})
-
 
 
 def book_table(request):
