@@ -2,31 +2,29 @@ from django.http import HttpResponse, HttpResponseRedirect
 from django.shortcuts import render
 from index.models import Book, PubName
 import logging
+from index.forms import TitleSearch
 from django import forms
 # Create your views here.
 
 
+def book_not_list(request):
+    return render(request,"index/book_not_list.html")
+
+
 def search_title_form(request):
-    return render(request, 'index/search_title.html')
+    return render(request, 'index/search_title.html', context={'form': TitleSearch()})
 
 
 def search_title(request):
-    if not request.GET.get('title', ''):
-        errors = ['输入的书名是无效']
-        return render(request, 'index/search_title.html', locals())
-    logging.basicConfig(level=logging.DEBUG)
-    # 查询title忽略大小写,所得类型为QuerySet
-    title = Book.objects.filter(title__icontains=request.GET['title'])
-    logging.debug("title:%s", title)
-    name = ""
-    pub = ""
-    price = ""
-    if title.exists():
-        name = title[0].title
-        pub = title[0].pub
-        price = title[0].price
-        logging.debug("name:%s", name)
-    return render(request, 'index/book_list.html', {"name": name, "pub": pub, "price": price})
+    form = TitleSearch(request.GET)
+    if form.is_valid():
+        books = Book.objects.filter(title__icontains=form.cleaned_data["title"])
+        if not books:
+            return HttpResponseRedirect("/index/book_not_list")
+        return render(request, 'index/book_list.html', locals())
+    else:
+        return render(request, 'index/search_title.html', {'form': form})
+
 
 
 def book_table(request):
@@ -67,5 +65,6 @@ def add_book(request):
             print('Add ErrorReason is %s' % (e))
         return HttpResponseRedirect('/index/all_book')
     return HttpResponse('请使用正确Http请求方法 !')
+
 
 
